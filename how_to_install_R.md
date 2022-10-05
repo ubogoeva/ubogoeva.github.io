@@ -1,4 +1,10 @@
-# Инструкция по установке R и RStudio
+---
+title: "Инструкция по установке R и RStudio"
+# author: "Elena U"
+output:
+  html_document:
+    toc: true
+---
 
 
 ## На Ubuntu 20.04, 22.04
@@ -24,7 +30,7 @@ sudo apt install libssl-dev libclang-dev libpq5
 Запустить терминал, перейти в папку загрузок и запустить:
 `sudo dpkg -i <DEB_FILE_NAME>`, где <DEB_FILE_NAME> название скачанного .deb файла 
 
-**Шаг 4:** Install dependencies that many R packages need
+**Шаг 4:** Установить необходимые для многих R пакетов зависимости
 
 ```
 sudo apt update
@@ -32,11 +38,20 @@ sudo apt -y install libpng-dev libxml2-dev libxml2 libxrender1 libxtst6 libxi6 l
 sudo apt -y install libudunits2-dev libgeos-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev libfreetype6-dev libtiff5-dev libjpeg-dev libpq-dev cargo libcurl4-openssl-dev
 ```
 
-## На Windows
+## На Windows 10, 11
 
 **Шаг 1:** Скачать R с официального сайта https://cran.r-project.org/bin/windows/base/
+Запустить установщик
 
-**Шаг 2:** Скачать RStudio
+**Шаг 2:** Скачать RStudio (бесплатную версию) https://www.rstudio.com/products/rstudio/download/
 
+**Шаг 3:**
 
+## Рекомендации по настройке RStudio перед началом работы
+Самое первое, что советую сделать: настроить удаление RData при закрытии R и не восстанавливать при перезапуске
 
+![Нужно выбрать не сохранять RData при выходе и не восстанавливать при запуске R](R_startup.png)
+
+Рекомендую почитать материал по эффективной организации работы в R по [ссылке](https://telegra.ph/R-how-to-organize-work-08-08), несколько более подробно разобрано и с большим количеством ссылок на дополнительные материалы
+
+## Часто встречающиеся проблемы

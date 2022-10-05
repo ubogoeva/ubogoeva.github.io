@@ -17,14 +17,14 @@ sudo apt update
 sudo apt install libssl-dev libclang-dev libpq5
 ```
 
-**Step 3:** Установить RStudio
+**Шаг 3:** Установить RStudio
 
 Скачать отсюда https://www.rstudio.com/products/rstudio/download/#download. 
 Выбрать бесплатную версию, соответствующую вашей операционной системе.
 Запустить терминал, перейти в папку загрузок и запустить:
 `sudo dpkg -i <DEB_FILE_NAME>`, где <DEB_FILE_NAME> название скачанного .deb файла 
 
-**Step 4:** Install dependencies that many R packages need
+**Шаг 4:** Install dependencies that many R packages need
 
 ```
 sudo apt update
@@ -32,6 +32,9 @@ sudo apt -y install libpng-dev libxml2-dev libxml2 libxrender1 libxtst6 libxi6 l
 sudo apt -y install libudunits2-dev libgeos-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev libfreetype6-dev libtiff5-dev libjpeg-dev libpq-dev cargo libcurl4-openssl-dev
 ```
 
+## На Windows
+
+**Шаг 1:** Скачать R с официального сайта
 
 
 

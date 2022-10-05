@@ -34,7 +34,9 @@ sudo apt -y install libudunits2-dev libgeos-dev libfontconfig1-dev libharfbuzz-d
 
 ## На Windows
 
-**Шаг 1:** Скачать R с официального сайта
+**Шаг 1:** Скачать R с официального сайта https://cran.r-project.org/bin/windows/base/
+
+**Шаг 2:** Скачать RStudio
 
 
 

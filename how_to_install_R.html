@@ -382,8 +382,8 @@ Ubuntu 20.04, 22.04</a></li>
 <div id="на-ubuntu-20.04-22.04" class="section level2">
 <h2>На Ubuntu 20.04, 22.04</h2>
 <p><strong>Шаг 1:</strong> Установить r-base:</p>
-<p>Для Ubuntu 22.04: <a href="https://www.how2shout.com/linux/how-to-install-r-base-ubuntu-22-04-lts-jammy/" class="uri">https://www.how2shout.com/linux/how-to-install-r-base-ubuntu-22-04-lts-jammy/</a>
-Для Ubuntu 20.04: <a href="https://linuxize.com/post/how-to-install-r-on-ubuntu-20-04/" class="uri">https://linuxize.com/post/how-to-install-r-on-ubuntu-20-04/</a></p>
+<p>Для Ubuntu 22.04: <a href="https://www.how2shout.com/linux/how-to-install-r-base-ubuntu-22-04-lts-jammy/" class="uri">https://www.how2shout.com/linux/how-to-install-r-base-ubuntu-22-04-lts-jammy/</a></p>
+<p>Для Ubuntu 20.04: <a href="https://linuxize.com/post/how-to-install-r-on-ubuntu-20-04/" class="uri">https://linuxize.com/post/how-to-install-r-on-ubuntu-20-04/</a></p>
 <p><strong>Шаг 2:</strong> Установить зависимости RStudio</p>
 <p>В терминале (вызвать можно с помощью сочетания клавиш Ctrl+Alt+T)</p>
 <pre><code>sudo apt update
@@ -392,7 +392,7 @@ sudo apt install libssl-dev libclang-dev libpq5</code></pre>
 <p>Скачать отсюда <a href="https://www.rstudio.com/products/rstudio/download/#download" class="uri">https://www.rstudio.com/products/rstudio/download/#download</a>.
 Выбрать бесплатную версию, соответствующую вашей операционной системе.
 Запустить терминал, перейти в папку загрузок и запустить:
-<code>sudo dpkg -i &lt;DEB_FILE_NAME&gt;</code>, где <DEB_FILE_NAME>
+<code>sudo dpkg -i &lt;DEB_FILE_NAME&gt;</code>, где ‘DEB_FILE_NAME’
 название скачанного .deb файла</p>
 <p><strong>Шаг 4:</strong> Установить необходимые для многих R пакетов
 зависимости</p>
@@ -410,8 +410,8 @@ sudo apt -y install libudunits2-dev libgeos-dev libfontconfig1-dev libharfbuzz-d
 <p><strong>Шаг 2:</strong> Скачать RStudio (бесплатную версию) <a href="https://www.rstudio.com/products/rstudio/download/" class="uri">https://www.rstudio.com/products/rstudio/download/</a>
 Запустить установщик с дефолтными параметрами.</p>
 <p>Если вдруг у вас на компьютере юзернейм написан кириллицей, то
-переходите к разделучасто встречающихся проблем. Если же нет, то все
-должно работать нормально.</p>
+переходите к разделу часто встречающихся проблем. Если же нет,
+поздравляю с подключением!</p>
 </div>
 <div id="на-macos" class="section level2">
 <h2>На MacOS</h2>
@@ -461,7 +461,7 @@ Windows, вот еще одна <a href="https://www.wintips.org/how-to-rename-u
 Однако, я не гарантирую, что это не повлечет проблем в дальнейшем, но
 этот путь кажется проще.</p>
 <p>Также способ замены дефолтного пути может помочь, если по умолчанию R
-пытается поставить пакеты в папку OneDrive</p>
+пытается поставить пакеты в папку OneDrive.</p>
 <p><strong>Шаг 1:</strong> Создайте папку в корневом диске C:// или D://
 для установки пакетов без кириллических символов и пробелов, например
 <code>C:/Rlib</code>.</p>
@@ -478,7 +478,7 @@ system(&quot;setx TMP C:/Temp&quot;)</code></pre>
 <code>.libPaths()</code>. Скорее всего в выдаче будет две директории,
 исходная <code>C:/Users/Юзер/AppData/...</code>, и вновь созданная, то
 есть <code>C:/Rlib</code>. Чтобы переназначить новую директорию как
-дефолотную для установки пакетов запустите следующий код:</p>
+дефолтную для установки пакетов запустите следующий код:</p>
 <pre><code>myPaths &lt;- .libPaths()   # get the paths
 myPaths &lt;- c(myPaths[2], myPaths[1])  # switch them
 .libPaths(myPaths)  # reassign them</code></pre>

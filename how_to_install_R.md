@@ -132,5 +132,4 @@ myPaths <- c(myPaths[2], myPaths[1])
 2. https://www.accelebrate.com/library/how-to-articles/r-rstudio-library
 3. Материалы со школы [NGSchool](https://ngschool.eu/ngschool2022/)
 
-
-
+Подписывайтесь на мой [телеграм-канал](https://t.me/stats_for_science), следите за новостями, обещаю интересные материалы по статистике и R!

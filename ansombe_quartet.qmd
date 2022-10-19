@@ -4,6 +4,9 @@ author: "Elena U"
 format: html
 editor: visual
 fig-dpi: 300
+project:
+  type: website
+  output-dir: docs
 ---
 
 ## Квартет Энскомба (Anscombe's quartet)

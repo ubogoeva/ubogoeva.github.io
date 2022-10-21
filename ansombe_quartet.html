@@ -173,7 +173,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>       x1        x2        x3        x4 
 0.8164205 0.8162365 0.8162867 0.8165214 </code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># еще простой способ отразить все описательные статистики - просто вызвать функцию summary</span></span>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># еще простой способ отразить большинство описательных статистик - просто вызвать функцию summary</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(anscombe)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       x1             x2             x3             x4           y1        
@@ -192,7 +192,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
  Max.   :9.260   Max.   :12.74   Max.   :12.500  </code></pre>
 </div>
 </div>
-<p>Итак, можно увидеть что описательные статистики совпадают. Что насчет распределения данных?</p>
+<p>Можно увидеть, что описательные статистики совпадают. Что насчет распределения данных?</p>
 </section>
 <section id="построим-графики-распределения-значений" class="level2">
 <h2 class="anchored" data-anchor-id="построим-графики-распределения-значений">Построим графики распределения значений</h2>
@@ -236,13 +236,32 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><img src="ansombe_quartet_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="2100"></p>
 </div>
 </div>
-<p>Итак, как и было обещано, распределения данных оказались совершенно разными. Подчеркну еще раз важность визуализации данных перед началом анализа. Причем именно рекомендую строить диаграммы рассеяния (scatter plot) как в коде, приведенном выше, а не опираться только на боксплоты (boxplot), к примеру. Боксплоты сокращают информацию о данных, хотя и являются стандартом на конференциях и в публикациях. Про это можно почитать <a href="https://nightingaledvs.com/ive-stopped-using-box-plots-should-you/">здесь</a>.</p>
+<p>Итак, как и ожидалось, распределения данных оказались совершенно разными. Подчеркну еще раз важность визуализации данных перед началом анализа. Не стоит опираться <strong>только</strong> на средние, медианы, дисперсию, поскольку эта информация должна дополняться визуальным представлением данных, даже хотя бы для себя.</p>
+<p>Еще вот такой пример обманчивых описательных статистик:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="figure_distr.jpg" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">обратите внимание на датазавтра наверху</figcaption><p></p>
+</figure>
+</div>
+<p><br>
+Кроме того, рекомендую строить диаграммы рассеяния (scatter plot) как в коде, приведенном выше, а не опираться только на боксплоты (boxplot), к примеру. Боксплоты сокращают информацию о данных, хотя и являются стандартом на конференциях и в публикациях. Про это можно почитать <a href="https://nightingaledvs.com/ive-stopped-using-box-plots-should-you/">здесь</a>. Думаю, для публикации неплохим вариантом могут быть violin plots или боксплоты с полупрозрачными точками, отрисованные с помощью <code>geom_jitter</code>. Правда, это лучше сработает, если точек не больше ~30, на мой взгляд, иначе график будет сильно рябить.</p>
+<p>О корректной, не вводящей в заблуждение читателя визуализации данных написано уже немало статей и книг, пока что приведу несколько ссылок для самостоятельного ознакомления:</p>
+<ul>
+<li><p>https://www.youtube.com/watch?v=4MfUCX_KpdE лекция Дженни Брайан (Jenny Bryan) о предобработке данных перед построением графиков</p></li>
+<li><p>https://clauswilke.com/dataviz/ книга по визуализации данных, доступна онлайн</p></li>
+<li><p>https://socviz.co/index.html еще одна книга по визуализации данных, доступна онлайн</p></li>
+<li><p>https://www.toptal.com/designers/ux/data-visualization-mistakes статья про самые распространенные ошибки при построении графиков</p></li>
+<li><p>https://colorbrewer2.org/#type=sequential&amp;scheme=YlGnBu&amp;n=3 сайт с хорошими сочетаниями цветов для отрисовки графиков</p></li>
+</ul>
 </section>
 <section id="список-источников" class="level2">
 <h2 class="anchored" data-anchor-id="список-источников">Список источников</h2>
 <ol type="1">
 <li>Anscombe, F. J. (1973). “Graphs in Statistical Analysis”. <em>American Statistician</em>. <strong>27</strong> (1): 17–21. <a href="https://en.wikipedia.org/wiki/Doi_(identifier)" title="Doi (identifier)">doi</a>:<a href="https://doi.org/10.1080%2F00031305.1973.10478966">10.1080/00031305.1973.10478966</a></li>
+<li>https://en.wikipedia.org/wiki/Anscombe%27s_quartet</li>
 </ol>
+<p>Подписывайтесь на <a href="https://t.me/stats_for_science">телеграм-канал</a>, будет много интересного</p>
 </section>
 
 </main>

@@ -4,7 +4,8 @@ author: "Elena U"
 date: "2022-11-15"
 output: 
   html_document:
-    code_folding: hide
+        toc: true
+        code_folding: hide
 
 ---
 
@@ -16,7 +17,7 @@ output:
 .spoiler::before {
   background-color: #d6d6d6;
   visibility: visible;
-  content: "Spoiler alert! Не открывайте, если не уверены, что хотите это знать."
+  content: "Spoiler alert!"
 }
 
 .spoiler:hover {
@@ -51,7 +52,9 @@ output:
 
 **Размах** самая простая для понимания метрика, при этом редко использующаяся, поскольку сама по себе разница между максимальным и минимальным значением довольно-таки малоинформативна.
 
-**Межквартильный размах (IQR)**, точнее 1.5\*IQR чаще всего используется на боксплотах (boxplot), я не встречала 1\*IQR или 1.5\*IQR как усы к обычным барплотам, но мало ли что может встретиться.
+**Межквартильный размах (IQR)**, точнее 1.5\*IQR чаще всего используется на боксплотах (boxplot), я редко встречала 1\*IQR или 1.5\*IQR как усы к обычным барплотам.
+
+*Барплот (barplot) - столбчатая диаграмма для категориальных данных, их будет много чуть дальше.*
 
 ![*Самое простое описание составляющих боксплота*](boxplot.png)
 
@@ -81,7 +84,7 @@ output:
 
 Принципиальное отличие от описательных пределов погрешности в том, что грубо говоря, стандартная ошибка среднего/доверительный интервал пытаются отразить степень уверенности в поиске к примеру *истинного среднего* генеральной совокупности. В то время как описательные отражают, что происходит конкретно в *нашей выборке*.
 
-Тут немного инфы для продвинутых:
+Тут немного инфы для продвинутых (не открывайте, если не уверены, что хотите это знать!):
 
 [Небольшое уточнение: с помощью бутстрепов можно оценивать не только доверительный интервал и стандартную ошибку для среднего, но и для медианы и даже для стандартного отклонения, но про это сейчас не будем]{.spoiler}
 
@@ -142,7 +145,9 @@ $$\huge CI = \overline{x} ± z\frac{s}{\sqrt{n}}$$
 
 Таким образом, **перекрывание** стандартных ошибок говорит об **отсутствии** значимости в различии, при этом обратное не верно, а с доверительными интервалами наоборот - отсутствие перекрывания доверительных интервалов говорит о значимости различий, в то время обратное не верно.
 
-В этом смысле мне нравится концепция стандартного отклонения, потому что их перекрывание или не перекрывание не говорит нам вообще ничего, а значит - нельзя запутаться)
+В этом смысле мне нравится концепция стандартного отклонения, потому что их перекрывание или не перекрывание не говорит нам вообще ничего, а значит - нельзя запутаться).
+
+**В любом случае, вне зависимости какой тип пределов погрешностей вы выбрали для отображения на графике, всегда нужно подписывать какой, потому что интерпретации совершенно разные.**
 
 ## А что если вообще не рисовать пределы погрешностей?
 
@@ -154,7 +159,7 @@ $$\huge CI = \overline{x} ± z\frac{s}{\sqrt{n}}$$
 ```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
 violin_box <- iris %>% 
-  ggplot(aes(x = Species, y = Petal.Width))+
+  ggplot(aes(x = Species, y = Sepal.Width))+
   geom_violin(aes(fill = Species))+
   geom_boxplot(width = 0.15, alpha = 0.8)+
   theme_bw()
@@ -165,7 +170,7 @@ violin_box
 
 ```{r}
 box_point <- iris %>% 
-  ggplot(aes(Species, Petal.Width))+
+  ggplot(aes(Species, Sepal.Width))+
   geom_boxplot()+
   geom_jitter(aes(colour = Species), 
               position = position_jitter(width = 0.3, height = 0),
@@ -174,36 +179,89 @@ box_point <- iris %>%
 box_point
 ```
 
-По моему прикольно получилось! Эти варианты визуализации содержат гораздо больше информации, сравните например с обычными боксплотами и барплотами.
+По моему прикольно получилось! Эти варианты визуализации содержат гораздо больше информации, сравните например с обычными боксплотами и барплотами (здесь как предел погрешности использовала стандартное отклонение).
 
 
 
 ```{r}
 box <- iris %>% 
-  ggplot(aes(Species, Petal.Width, fill = Species))+
+  ggplot(aes(Species, Sepal.Width, fill = Species))+
   geom_boxplot()+
   theme_bw()
 bar <- iris %>% 
   group_by(Species) %>% 
-  summarise(mean_PW = mean(Petal.Width), sd_PW = sd(Petal.Width)) %>% 
+  summarise(mean_PW = mean(Sepal.Width), sd_PW = sd(Sepal.Width)) %>% 
   ggplot(aes(Species, mean_PW, fill = Species))+
   geom_bar(stat = 'identity')+
   geom_errorbar(aes(ymin = mean_PW - sd_PW, ymax = mean_PW + sd_PW), width = 0.2)+
+  labs(y = 'Mean Sepal Width')+
   theme_bw()
 box
 bar
 ```
 
-А теперь все вместе на одном графике:
+А теперь все вместе на одном графике (обратите внимание на библиотеку `patchwork` для красивого объединения плотов на одном рисунке):
 
 ```{r}
 library(patchwork)
 p <- (violin_box + box_point) / (box + bar)
 p + plot_annotation(tag_levels = 'A')
 ```
-Голосуйте, какой плот больше нравится и более информативный. Мне лично здесь нравится вариант box+точки, кажется наиболее информативным и красивым вариантам. Возможно, если наблюдений будет больше, то лучше будет первый вариант
+Голосуйте, какой плот больше нравится и является более информативным. Мне лично здесь нравится вариант B - box+точки, кажется наиболее информативным и красивым. Возможно, если наблюдений будет больше, то лучше окажется первый вариант с вайлином плотом и боксом.
+
+А теперь визуализация трех основных пределов погрешностей: стандартного отклонения, стандартной ошибки и доверительных интервалов на данных `iris`.
+
+```{r, warning=FALSE, message=FALSE}
+library(data.table)
+bar_se <- iris %>% 
+  group_by(Species) %>% 
+  summarise(mean_PW = mean(Sepal.Width), se_PW = sd(Sepal.Width)/sqrt(length(Sepal.Width))) %>% 
+  ggplot(aes(Species, mean_PW, fill = Species))+
+  geom_bar(stat = 'identity')+
+  geom_errorbar(aes(ymin = mean_PW - se_PW, ymax = mean_PW + se_PW), width = 0.2)+
+  labs(y = 'Mean Sepal Width')+
+  ggtitle('Error bars are standard error')+
+  theme_bw()
+# bar_se
+
+bar_CI <- iris %>% 
+  group_by(Species) %>%
+  summarise(n=n(), mean=mean(Sepal.Length), sd=sd(Sepal.Length)) %>%
+  mutate(se = sd/sqrt(n))  %>%
+  mutate(ic = se * qt((1-0.05)/2 + .5, n-1)) %>% 
+  ggplot(aes(Species, mean, fill = Species))+
+  geom_bar(stat = 'identity')+
+  geom_errorbar(aes(ymin = mean - ic, ymax = mean + ic), width = 0.2)+
+  labs(y = 'Mean Sepal Width')+
+  ggtitle('Error bars are confidence intervals')+
+  theme_bw()
+# bar_CI
+bar+ggtitle('Error bars are standard deviation') + bar_se + bar_CI+  plot_layout(ncol = 2)
+
+```
+
+Теперь я сделаю одну плохую вещь, а именно **просто** сравню тестом Стьюдента Sepal.Width для разных видов ириса. Как думаете, почему это плохо?
+
+[Я в этом примере не делаю поправку на множественное тестирование]{.spoiler}
+
+```{r}
+iris %>% 
+  setDT() 
+cat('versicolor vs setosa: \np-value of the test', t.test(iris[Species == 'setosa', Sepal.Width], iris[Species == 'versicolor', Sepal.Width])$p.value)
+cat('setosa vs virginica: \np-value of the test', t.test(iris[Species == 'setosa', Sepal.Width], iris[Species == 'virginica', Sepal.Width])$p.value)
+cat('virginica vs versicolor: \np-value of the test', t.test(iris[Species == 'virginica', Sepal.Width], iris[Species == 'versicolor', Sepal.Width])$p.value)
 
 
+```
+Но один раз в жизни можно, только для демонстрации того, что все выборки значимо отличаются друг от друга (без поправки), и на графиках можно увидеть что доверительные интервалы не перекрываются.
+
+Ура! Я дописала, а вы дочитали, с чем я всех и поздравляю) Теперь перейдем к выводам.   
+
+## Выводы
+
+1. Существует два типа отображения пределов погрешностей на графике: описательные, которые *описывают* значения в конкретно нашей выборке и inferential (так и не придумала как переводить), которые пытаются отразить что-то о генеральной совокупности с заданной долей уверенности.
+2. Для отображения сравнений между группами рекомендуют использовать вторые, поскольку они позволяют делать выводы из перекрывания или не-перекрывания усов.
+3. Однако, есть способы рисовать распределение наших значений без использования мисинтерпретируемых пределов погрешностей, например violin+boxplot и boxplot+точки
 
 
 

@@ -287,4 +287,4 @@ cat('virginica vs versicolor: \np-value of the test', t.test(iris[Species == 'vi
 
 Подписывайтесь на телеграм канал: https://t.me/stats_for_science, будет много интересного
 
-
+![](figures/logo.jpg)

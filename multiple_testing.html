@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Elena U">
+<meta name="dcterms.date" content="2023-11-29">
+
+<title>Поправки на множественное тестирование</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="multiple_testing_files/libs/clipboard/clipboard.min.js"></script>
+<script src="multiple_testing_files/libs/quarto-html/quarto.js"></script>
+<script src="multiple_testing_files/libs/quarto-html/popper.min.js"></script>
+<script src="multiple_testing_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="multiple_testing_files/libs/quarto-html/anchor.min.js"></script>
+<link href="multiple_testing_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="multiple_testing_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="multiple_testing_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="multiple_testing_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="multiple_testing_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#классификация-поправок-на-множественное-тестирование" id="toc-классификация-поправок-на-множественное-тестирование" class="nav-link active" data-scroll-target="#классификация-поправок-на-множественное-тестирование">Классификация поправок на множественное тестирование</a></li>
+  <li><a href="#fwer-family-wise-error-rate" id="toc-fwer-family-wise-error-rate" class="nav-link" data-scroll-target="#fwer-family-wise-error-rate">FWER – family-wise error rate</a>
+  <ul class="collapse">
+  <li><a href="#симуляция-независимых-тестов-для-подсчета-fwer" id="toc-симуляция-независимых-тестов-для-подсчета-fwer" class="nav-link" data-scroll-target="#симуляция-независимых-тестов-для-подсчета-fwer">Симуляция независимых тестов для подсчета FWER</a></li>
+  <li><a href="#поправка-бонферрони-bonferroni" id="toc-поправка-бонферрони-bonferroni" class="nav-link" data-scroll-target="#поправка-бонферрони-bonferroni">Поправка Бонферрони (Bonferroni)</a></li>
+  <li><a href="#поправка-холма-holm" id="toc-поправка-холма-holm" class="nav-link" data-scroll-target="#поправка-холма-holm">Поправка Холма (Holm)</a></li>
+  <li><a href="#тест-фишера-lsd-least-significant-difference" id="toc-тест-фишера-lsd-least-significant-difference" class="nav-link" data-scroll-target="#тест-фишера-lsd-least-significant-difference">Тест Фишера LSD (Least significant difference)</a></li>
+  <li><a href="#поправка-тьюки-tukey-tukeyhsd" id="toc-поправка-тьюки-tukey-tukeyhsd" class="nav-link" data-scroll-target="#поправка-тьюки-tukey-tukeyhsd">Поправка Тьюки (Tukey, TukeyHSD)</a></li>
+  <li><a href="#тест-данна-dunn" id="toc-тест-данна-dunn" class="nav-link" data-scroll-target="#тест-данна-dunn">Тест Данна (Dunn)</a></li>
+  <li><a href="#тест-даннета-dunnet" id="toc-тест-даннета-dunnet" class="nav-link" data-scroll-target="#тест-даннета-dunnet">Тест Даннета (Dunnet)</a></li>
+  </ul></li>
+  <li><a href="#fdr---false-discovery-rate" id="toc-fdr---false-discovery-rate" class="nav-link" data-scroll-target="#fdr---false-discovery-rate">FDR - false discovery rate</a>
+  <ul class="collapse">
+  <li><a href="#определение-fdr" id="toc-определение-fdr" class="nav-link" data-scroll-target="#определение-fdr">Определение FDR</a></li>
+  <li><a href="#расчет-fdr" id="toc-расчет-fdr" class="nav-link" data-scroll-target="#расчет-fdr">Расчет FDR</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Поправки на множественное тестирование</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Elena U </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 29, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<div style="text-align: right">
+<p><em>Время чтения ~10 минут</em></p>
+</div>
+<p>Разберем, что такое поправки, зачем они нужны, и как работают основные поправки, которые часто используются в науке и индустрии.</p>
+<p>Самое первое, на что нужно акцентировать внимание при разговоре о поправках на множественное тестирование это:</p>
+<section id="классификация-поправок-на-множественное-тестирование" class="level2">
+<h2 class="anchored" data-anchor-id="классификация-поправок-на-множественное-тестирование">Классификация поправок на множественное тестирование</h2>
+<p>Существует 2 принципиально разных подхода к поправкам на множественное тестирование.</p>
+<ul>
+<li><p>Контроль групповой <strong>вероятности</strong> ошибки I рода (FWER, family-wise error rate)</p>
+<ul>
+<li><p>Тесты, которые поправляют значимость у набора p-value (поправка Бонферрони, Холма, Шидака и тд.) вне зависимости, какой тест был применен до этого;</p></li>
+<li><p>Тесты для попарных сравнений групп: пост-хоки (поправка Тьюки, поправка Данна, тест Фишера LSD и тд).</p></li>
+</ul></li>
+<li><p>Контроль <strong>доли</strong> ложных открытий (FDR, false discovery rate): поправка Benjamini-Hochberg, поправка Benjamini-Yekutieli.</p></li>
+</ul>
+<p>Небольшое напоминание про типы ошибок:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/error_1_2_type.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">https://t.me/stats_for_science/69</figcaption>
+</figure>
+</div>
+<p>Разберем разные виды поправок подробнее.</p>
+</section>
+<section id="fwer-family-wise-error-rate" class="level1">
+<h1>FWER – family-wise error rate</h1>
+<p>FWER – групповая вероятность ошибки I рода. Мне больше нравится определение, что это вероятность совершить <strong>хоть одну</strong> ошибку первого рода в нескольких тестах. Обычно рассчитывается для серии тестов (но можно посчитать FWER и для одного теста: вероятность будет равна <span class="math inline">\(\alpha\)</span>).</p>
+<p><span class="math display">\[
+FWER = 1 - (1-\alpha)^k, где
+\]</span></p>
+<p><em>k</em> - количество тестов, <span class="math inline">\(\alpha\)</span> - уровень значимости.</p>
+<p>Для корректного применения формулы тесты должны быть <u>независимыми</u>.</p>
+<p>Если это не так, то посчитать точный FWER можно с помощью симуляции, а по формуле вычисляется верхняя граница (то есть максимально возможное значение вероятности совершить ошибку I рода).</p>
+<p>Пример ситуаций, когда тесты зависимы:</p>
+<ul>
+<li><p>Мы собрали две группы образцов и измерили у них 20 параметров. Тесты зависимы, поскольку пул образцов один и тот же для каждого измеренного параметра.</p></li>
+<li><p>У нас 3 группы, делаем попарное сравнение каждой группы с каждой. Тесты зависимы, поскольку одна и та же группа участвует в двух тестах.</p></li>
+</ul>
+<p>Во многих ситуациях тесты являются зависимыми, тем не менее при множественном тестировании даже для зависимых тестов ошибка первого рода превышает пороговое 0.05.</p>
+<section id="симуляция-независимых-тестов-для-подсчета-fwer" class="level2">
+<h2 class="anchored" data-anchor-id="симуляция-независимых-тестов-для-подсчета-fwer">Симуляция независимых тестов для подсчета FWER</h2>
+<p>Генерируем заданное количество раз (5, 10, 50, 100) выборки размером 100 элементов из одной генеральной совокупности (стандартного нормального распределения) и сравниваем их t-тестом. Повторяем это 10000 раз, чтобы оценить, долю случаев, где мы получили p-value &lt; 0.05 (ложнопозитивный результат).</p>
+<p>Тесты независимые, поскольку каждый раз извлекаем новую выборку, следовательно, мы ожидаем увидеть результат, близкий к рассчитанному по формуле выше.</p>
+<div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-2_123469fe484e339cc20b3b7004c1fbcc">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">'Для 5 тестов: '</span>, <span class="fu">mean</span>(<span class="fu">replicate</span>(<span class="dv">10000</span>, <span class="fu">sum</span>(<span class="fu">replicate</span>(<span class="dv">5</span>, <span class="fu">t.test</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">rnorm</span>(<span class="dv">100</span>))<span class="sc">$</span>p.value) <span class="sc">&lt;</span> <span class="fl">0.05</span>) <span class="sc">!=</span> <span class="dv">0</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Для 5 тестов:  0.229"</code></pre>
+</div>
+</div>
+<p><span class="math inline">\(FWER = 1 - (1-\alpha)^k = 1 - (1-0.05)^5 = 0.226\)</span></p>
+<div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-3_dfefa8fb7990140744ee4a2ed34fd7fc">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">'Для 10 тестов: '</span>, <span class="fu">mean</span>(<span class="fu">replicate</span>(<span class="dv">10000</span>, <span class="fu">sum</span>(<span class="fu">replicate</span>(<span class="dv">10</span>, <span class="fu">t.test</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">rnorm</span>(<span class="dv">100</span>))<span class="sc">$</span>p.value) <span class="sc">&lt;</span> <span class="fl">0.05</span>) <span class="sc">!=</span> <span class="dv">0</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Для 10 тестов:  0.4061"</code></pre>
+</div>
+</div>
+<p><span class="math inline">\(FWER = 1 - (1-\alpha)^k = 1 - (1-0.05) ^{10} = 0.401\)</span></p>
+<div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-4_748d9fc9cc3a61f2164325443d2d9131">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">'Для 50 тестов: '</span>, <span class="fu">mean</span>(<span class="fu">replicate</span>(<span class="dv">10000</span>, <span class="fu">sum</span>(<span class="fu">replicate</span>(<span class="dv">50</span>, <span class="fu">t.test</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">rnorm</span>(<span class="dv">100</span>))<span class="sc">$</span>p.value) <span class="sc">&lt;</span> <span class="fl">0.05</span>) <span class="sc">!=</span> <span class="dv">0</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Для 50 тестов:  0.9224"</code></pre>
+</div>
+</div>
+<p><span class="math inline">\(FWER = 1 - (1-\alpha)^k = 1 - (1-0.05) ^{50} = 0.923\)</span></p>
+<div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-5_982deb2b6d97838d6737900e27145532">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">'Для 100 тестов: '</span>, <span class="fu">mean</span>(<span class="fu">replicate</span>(<span class="dv">10000</span>, <span class="fu">sum</span>(<span class="fu">replicate</span>(<span class="dv">100</span>, <span class="fu">t.test</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">rnorm</span>(<span class="dv">100</span>))<span class="sc">$</span>p.value) <span class="sc">&lt;</span> <span class="fl">0.05</span>) <span class="sc">!=</span> <span class="dv">0</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Для 100 тестов:  0.994"</code></pre>
+</div>
+</div>
+<p><span class="math inline">\(FWER = 1 - (1-\alpha)^k = 1 - (1-0.05) ^{100} = 0.994\)</span></p>
+<p>Действительно, при симуляции значения сходятся с теоретически рассчитанными. Что можно сделать, чтобы избежать ошибок первого рода?</p>
+</section>
+<section id="поправка-бонферрони-bonferroni" class="level2">
+<h2 class="anchored" data-anchor-id="поправка-бонферрони-bonferroni">Поправка Бонферрони (Bonferroni)</h2>
+<p>Самый простой способ контролировать вероятность ошибки первого рода – это изменить критический уровень значимости <span class="math inline">\(\alpha\)</span>.</p>
+<p><span id="eq-fwer_bonf"><span class="math display">\[ FWER = 1 - (1-\frac{\alpha}{k})^k,  \tag{1}\]</span></span></p>
+<p>Делим <span class="math inline">\(\alpha\)</span> на число тестов -&gt; получаем новый p-уровень значимости, ниже которого результаты будут считаться статистически значимыми.</p>
+<p>Или умножаем каждое p-value на количество тестов -&gt; если поправленное p-value &lt; 0.05, то результат считается статистически значимым.</p>
+<p>При таком подходе мы контролируем вероятность ошибки первого рода, однако завышаем вероятность ошибки второго рода -&gt; уменьшаем мощность теста.</p>
+<p>Проверим FWER после поправки.</p>
+<div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-6_0b99b4712e5accc364b7d2ba0259b35f">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">replicate</span>(<span class="dv">10000</span>, <span class="fu">sum</span>(<span class="fu">replicate</span>(<span class="dv">5</span>, <span class="fu">t.test</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">rnorm</span>(<span class="dv">100</span>))<span class="sc">$</span>p.value) <span class="sc">&lt;</span> <span class="fl">0.05</span><span class="sc">/</span><span class="dv">5</span>) <span class="sc">!=</span> <span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.0507</code></pre>
+</div>
+</div>
+<div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-7_9218ee53a120c580f395867e057c80c8">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">replicate</span>(<span class="dv">10000</span>, <span class="fu">sum</span>(<span class="fu">replicate</span>(<span class="dv">10</span>, <span class="fu">t.test</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">rnorm</span>(<span class="dv">100</span>))<span class="sc">$</span>p.value) <span class="sc">&lt;</span> <span class="fl">0.05</span><span class="sc">/</span><span class="dv">10</span>) <span class="sc">!=</span> <span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.0509</code></pre>
+</div>
+</div>
+<div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-8_ed868c25d1f729588a0ff0983c23cf1b">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">replicate</span>(<span class="dv">10000</span>, <span class="fu">sum</span>(<span class="fu">replicate</span>(<span class="dv">50</span>, <span class="fu">t.test</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">rnorm</span>(<span class="dv">100</span>))<span class="sc">$</span>p.value) <span class="sc">&lt;</span> <span class="fl">0.05</span><span class="sc">/</span><span class="dv">50</span>) <span class="sc">!=</span> <span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.0491</code></pre>
+</div>
+</div>
+<div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-9_2a6f548f36ffbab090a2880c7cb58ea4">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">replicate</span>(<span class="dv">10000</span>, <span class="fu">sum</span>(<span class="fu">replicate</span>(<span class="dv">100</span>, <span class="fu">t.test</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">rnorm</span>(<span class="dv">100</span>))<span class="sc">$</span>p.value) <span class="sc">&lt;</span> <span class="fl">0.05</span><span class="sc">/</span><span class="dv">100</span>) <span class="sc">!=</span> <span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.049</code></pre>
+</div>
+</div>
+<p>Контролирует вероятность совершить <em>хоть 1</em> ошибку I рода на заданном уровне 0,05. В итоге страдает мощность теста.</p>
+<p>Поправка Бонферрони используется редко, в основном в областях, где цена ложнопозитивного результата очень высока, например в исследованиях GWAS на человеке. В остальных случаях рекомендуют использовать менее консервативные поправки.</p>
+</section>
+<section id="поправка-холма-holm" class="level2">
+<h2 class="anchored" data-anchor-id="поправка-холма-holm">Поправка Холма (Holm)</h2>
+<p>Менее консервативная поправка. Метод часто называют “Бонферрони-Холма”, однако Карло Бонферрони не имел отношения к разработке этой формулы. Разберем на примере как работает.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>p_value <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.004</span>, <span class="fl">0.87</span>, <span class="fl">0.003</span>, <span class="fl">0.04</span>, <span class="fl">0.18</span>, <span class="fl">0.24</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Сортируем и ранжируем p-value по убыванию, далее по формуле умножаем каждое p-value на <span class="math inline">\((m+1-rank)\)</span>, где <span class="math inline">\(m\)</span> - количество тестов, <span class="math inline">\(rank\)</span> - ранг p-value.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">pvalue</th>
+<th style="text-align: right;">rank_pvalue</th>
+<th style="text-align: left;">formula</th>
+<th style="text-align: right;">result</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0.003</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">0.003*(6 + 1 - 1)</td>
+<td style="text-align: right;">0.018</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.004</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">0.004*(6 + 1 - 2)</td>
+<td style="text-align: right;">0.020</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.040</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">0.04*(6 + 1 - 3)</td>
+<td style="text-align: right;">0.160</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.180</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">0.18*(6 + 1 - 4)</td>
+<td style="text-align: right;">0.540</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.240</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0.24*(6 + 1 - 5)</td>
+<td style="text-align: right;">0.480</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.870</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0.87*(6 + 1 - 6)</td>
+<td style="text-align: right;">0.870</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Далее нужно задать, что поправленные p-value могут только возрастать, и при этом p-value заменяется на бОльшее, поэтому процедура поправки Холма называется пошаговой нисходящей - step-down.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">pvalue</th>
+<th style="text-align: right;">rank_pvalue</th>
+<th style="text-align: left;">formula</th>
+<th style="text-align: right;">result</th>
+<th style="text-align: right;">p_adjusted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0.003</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">0.003*(6 + 1 - 1)</td>
+<td style="text-align: right;">0.018</td>
+<td style="text-align: right;">0.018</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.004</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">0.004*(6 + 1 - 2)</td>
+<td style="text-align: right;">0.020</td>
+<td style="text-align: right;">0.020</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.040</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">0.04*(6 + 1 - 3)</td>
+<td style="text-align: right;">0.160</td>
+<td style="text-align: right;">0.160</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.180</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">0.18*(6 + 1 - 4)</td>
+<td style="text-align: right;">0.540</td>
+<td style="text-align: right;">0.540</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.240</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0.24*(6 + 1 - 5)</td>
+<td style="text-align: right;">0.480</td>
+<td style="text-align: right;">0.540</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.870</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0.87*(6 + 1 - 6)</td>
+<td style="text-align: right;">0.870</td>
+<td style="text-align: right;">0.870</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Можем убедиться, что у нас подсчитано все верно:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">p.adjust</span>(<span class="fu">sort</span>(p_value), <span class="at">method =</span> <span class="st">'holm'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.018 0.020 0.160 0.540 0.540 0.870</code></pre>
+</div>
+</div>
+<p>Поскольку для самого <strong>минимального</strong> <strong>p-value</strong> поправленное p-value <strong>такое же</strong> как и у Бонферрони, то поправка Холма контролирует FWER на <strong>том же уровне 0.05</strong> (что и поправка Бонферрони!), при этом не так сильно снижает мощность тестов.</p>
+<p>Проверим на 100 тестах:</p>
+<div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-14_533ccfbd387575887406c24437c8ab0b">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">replicate</span>(<span class="dv">1000</span>, <span class="fu">sum</span>(<span class="fu">replicate</span>(<span class="dv">100</span>, <span class="fu">t.test</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">rnorm</span>(<span class="dv">100</span>))<span class="sc">$</span>p.value) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">p.adjust</span>(<span class="at">method =</span> <span class="st">'holm'</span>) <span class="sc">&lt;</span> <span class="fl">0.05</span>) <span class="sc">!=</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.051</code></pre>
+</div>
+</div>
+<p>Таким образом, мы все еще контролируем ожидаемую групповую вероятность ошибки первого рода на уровне 0.05, и оставляем больше значимых результатов, по сравнению с поправкой Бонферрони.</p>
+<p>Ссылка на оригинальную статью:</p>
+<p>Holm, S. (1979). A simple sequentially rejective multiple test procedure. <em>Scandinavian Journal of Statistics</em>, <strong>6</strong>, 65–70. <a href="https://www.jstor.org/stable/4615733" class="uri">https://www.jstor.org/stable/4615733</a>.</p>
+<p>Теперь перейдем к поправкам, которые используются в конкретных постхок тестах.</p>
+</section>
+<section id="тест-фишера-lsd-least-significant-difference" class="level2">
+<h2 class="anchored" data-anchor-id="тест-фишера-lsd-least-significant-difference">Тест Фишера LSD (Least significant difference)</h2>
+<p>Используется как постхок тест <strong>только</strong> после значимой ANOVA для сравнения средних групп между собой (напоминаю, что ANOVA, дисперсионный анализ дает ответ на вопрос, есть ли хоть какое-то различие между группами, но не говорит между какими). Также тест можно применять <strong>только</strong> для сравнения <u>трех групп</u>.</p>
+<p>Формула вычисления критерия:</p>
+<p><span class="math display">\[
+t = \frac{\overline{X_1}-\overline{X2}}{\sqrt{MSE(\frac{1}{n_1}+\frac{1}{n_2})}}, где
+\]</span></p>
+<p><span class="math inline">\(n_1\)</span>, <span class="math inline">\(n_2\)</span> - размер групп 1 и 2, <span class="math inline">\(MSE\)</span> - mean square error из таблицы ANOVA, то есть общая дисперсия между всеми группами.</p>
+<p>Для трех групп имеет большую мощность чем Тьюки. Но если групп больше чем 3, то контролирует FWER на уровне больше 0.05 и следовательно к использованию не рекомендуется.</p>
+<p>Подробнее, почему это так, можно посмотреть <a href="https://www.youtube.com/watch?v=cAltDstP6ik&amp;list=PLLTSM0eKjC2dvba2A0VCUogEGDch6cXFN&amp;index=5">здесь</a>.</p>
+</section>
+<section id="поправка-тьюки-tukey-tukeyhsd" class="level2">
+<h2 class="anchored" data-anchor-id="поправка-тьюки-tukey-tukeyhsd">Поправка Тьюки (Tukey, TukeyHSD)</h2>
+<p>Используется как постхок тест вне зависимости от значимости ANOVA (подробнее ниже) для сравнения средних групп между собой, чтобы узнать <em>какие именно</em> группы различаются. Также нет ограничения на количество групп, участвующих в сравнении.</p>
+<p>В этом тесте сравнивается каждая группа с каждой, поэтому если нам это не нужно, то мощность теста будет меньше, чем например у теста Даннета, который сравнивает группы только с одной.</p>
+<p>Формула расчета тестовой статистики:</p>
+<p><span class="math display">\[ q_s = \frac{M_1 - M_2}{\sqrt{\frac{SS_w}{2}(\frac{1}{n_A}+\frac{1}{n_B})}},  \]</span></p>
+<p>где M<sub>1</sub> &gt; M<sub>2</sub> (средние в группе), <em>nA</em>, <em>nB</em> - размер 1 и 2 выборки, <span class="math inline">\(SS_W\)</span> - внутригрупповая сумма квадратов в ANOVA.</p>
+<p>Для проверки гипотезы используется studentized range distribution, студентизированное распределение.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Про значимую ANOVA
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Тест Тьюки вовсе необязательно использовать <em>только</em> после значимой ановы, как нередко пишут в учебниках, однако в тесте при расчете используется SS<sub>W</sub> (sum of squares within, внутригрупповая сумма квадратов) и количество степеней свободы из таблицы ANOVA. Поэтому в докомпьютерное время расчет критерия Тьюки был <u>проще</u> после дисперсионного анализа, и при незначимой анове сравнивать группы между собой уже не имело смысла. Сейчас в R в функции <code>TukeyHSD()</code> для расчета критерия Тьюки в качестве инпута используется результат ановы, но никто не запрещает применять тест и если анова оказалась незначимой.</p>
+<p>Также может быть и ситуация, когда по результатам ANOVA получилось, что средние групп различаются между собой, но при этом по Тьюки нет, можно почитать <a href="https://stats.stackexchange.com/questions/16665/how-can-i-get-a-significant-overall-anova-but-no-significant-pairwise-difference">здесь</a>, почему так бывает.</p>
+</div>
+</div>
+</section>
+<section id="тест-данна-dunn" class="level2">
+<h2 class="anchored" data-anchor-id="тест-данна-dunn">Тест Данна (Dunn)</h2>
+<p>Является непараметрическим постхок тестом, аналогом теста Тьюки, для ситуаций, когда его допущения не выполняются.</p>
+<p>По сути сравнивает средний ранг групп, вычисленных после теста Краскелла-Уоллиса (Kruskal-Wallis), таким образом как бы учитывая общую дисперсию между группами (чего не будет происходить в попарных тестах Манна-Уитни). Далее полученные p-value должны быть поправлены любым методом, например Бонферрони, Холм, FDR, по умолчанию используется поправка Холма.</p>
+<p>Лично мне это в свое время сломало мозг, что это поправка в поправке, вроде используем постхок тест, но при этом его результат тоже нужно поправить тестом на выбор.</p>
+<p>Как альтернатива, как непараметрический аналог Тьюки можно использовать попарные тесты Манна-Уитни с поправками.</p>
+<p>Оригинальная статья про метод:</p>
+<p>Dunn, O. J. (1964) Multiple comparisons using rank sums Technometrics, 6(3):241-252.</p>
+</section>
+<section id="тест-даннета-dunnet" class="level2">
+<h2 class="anchored" data-anchor-id="тест-даннета-dunnet">Тест Даннета (Dunnet)</h2>
+<p>С помощью этого теста сравниваем одну группу с остальными группами, например, когда задача сравнить контрольную группу и несколько воздействий, и не нужно сравнение каждой группы с каждой</p>
+<p>Например, у нас 4 группы, из которой 1 контрольная, с которой мы проводим сравнения. У нас будет всего 3 сравнения: control - A, control - B, control - C, что увеличивает мощность теста.</p>
+<p>Для теста Даннета должны соблюдаться такие же допущения, как и для теста Тьюки: независимость наблюдений, примерно равная дисперсия в группах и нормальное распределение.</p>
+<p>Посмотреть детально можно <a href="https://www.youtube.com/watch?v=5pPd2rLS1GU&amp;list=PLLTSM0eKjC2dvba2A0VCUogEGDch6cXFN&amp;index=8">здесь</a>.</p>
+<p>Теперь перейдем к принципиально другому подходу поправок – контроле доли ложных открытий (FDR).</p>
+</section>
+</section>
+<section id="fdr---false-discovery-rate" class="level1">
+<h1>FDR - false discovery rate</h1>
+<section id="определение-fdr" class="level2">
+<h2 class="anchored" data-anchor-id="определение-fdr">Определение FDR</h2>
+<table class="table">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 35%">
+<col style="width: 38%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th>H<sub>0</sub> верна (различий нет)</th>
+<th>H<sub>0</sub> неверна (различие есть)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Не отклонить H<sub>0</sub></td>
+<td>True Negative (TN)</td>
+<td>False Negative (FN)</td>
+</tr>
+<tr class="even">
+<td>Отклонить H<sub>0</sub></td>
+<td>False Positive (FP)</td>
+<td>True Positive (TP)</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math display">\[ FDR = \frac{FP}{FP + TP} \]</span></p>
+<p>Подробнее в этом <a href="https://www.youtube.com/watch?v=-oIkIdhSNeU">видео</a></p>
+</section>
+<section id="расчет-fdr" class="level2">
+<h2 class="anchored" data-anchor-id="расчет-fdr">Расчет FDR</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>p_values <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.361</span>, <span class="fl">0.387</span>, <span class="fl">0.005</span>, <span class="fl">0.009</span>, <span class="fl">0.022</span>, <span class="fl">0.051</span>, <span class="fl">0.101</span>, <span class="fl">0.019</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li>Сортируем и ранжируем p-value по возрастанию</li>
+<li>Каждое p-value умножаем на <span class="math inline">\(\frac{m}{rank}\)</span>, где <span class="math inline">\(m\)</span> – количество тестов, <span class="math inline">\(rank\)</span> – ранг p-value</li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">pvalue</th>
+<th style="text-align: right;">rank_pvalue</th>
+<th style="text-align: left;">formula</th>
+<th style="text-align: right;">result</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0.005</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">0.005*(8/1)</td>
+<td style="text-align: right;">0.0400000</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.009</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">0.009*(8/2)</td>
+<td style="text-align: right;">0.0360000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.019</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">0.019*(8/3)</td>
+<td style="text-align: right;">0.0506667</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.022</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">0.022*(8/4)</td>
+<td style="text-align: right;">0.0440000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.051</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0.051*(8/5)</td>
+<td style="text-align: right;">0.0816000</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.101</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0.101*(8/6)</td>
+<td style="text-align: right;">0.1346667</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.361</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">0.361*(8/7)</td>
+<td style="text-align: right;">0.4125714</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.387</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">0.387*(8/8)</td>
+<td style="text-align: right;">0.3870000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Итоговое FDR вычисляется так, чтобы p-value не убывали, но при этом приводится в меньшую сторону (в отличие от поправки Холма), поэтому это называется восходящей процедурой – step-up.</p>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">pvalue</th>
+<th style="text-align: right;">rank_pvalue</th>
+<th style="text-align: left;">formula</th>
+<th style="text-align: right;">result</th>
+<th style="text-align: right;">p_adjusted</th>
+<th style="text-align: left;">reject_H0</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0.005</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">0.005*(8/1)</td>
+<td style="text-align: right;">0.0400000</td>
+<td style="text-align: right;">0.0360000</td>
+<td style="text-align: left;">yes</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.009</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">0.009*(8/2)</td>
+<td style="text-align: right;">0.0360000</td>
+<td style="text-align: right;">0.0360000</td>
+<td style="text-align: left;">yes</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.019</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">0.019*(8/3)</td>
+<td style="text-align: right;">0.0506667</td>
+<td style="text-align: right;">0.0440000</td>
+<td style="text-align: left;">yes</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.022</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">0.022*(8/4)</td>
+<td style="text-align: right;">0.0440000</td>
+<td style="text-align: right;">0.0440000</td>
+<td style="text-align: left;">yes</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.051</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">0.051*(8/5)</td>
+<td style="text-align: right;">0.0816000</td>
+<td style="text-align: right;">0.0816000</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.101</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">0.101*(8/6)</td>
+<td style="text-align: right;">0.1346667</td>
+<td style="text-align: right;">0.1346667</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0.361</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">0.361*(8/7)</td>
+<td style="text-align: right;">0.4125714</td>
+<td style="text-align: right;">0.3870000</td>
+<td style="text-align: left;">no</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0.387</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">0.387*(8/8)</td>
+<td style="text-align: right;">0.3870000</td>
+<td style="text-align: right;">0.3870000</td>
+<td style="text-align: left;">no</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>FDR в основном</p>
+<p>Как выбрать поправку?</p>
+<p>Все зависит от задачи</p>
+<p>Посмотреть подробнее про все поправки на множественное тестирование можно в <a href="https://www.youtube.com/playlist?list=PLLTSM0eKjC2dvba2A0VCUogEGDch6cXFN">этой серии</a> видео от замечательного канала по статистике <span class="citation" data-cites="TileStats">@TileStats</span></p>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -38,7 +38,7 @@ library(tidyverse)
 
 Небольшое напоминание про типы ошибок:
 
-![https://t.me/stats_for_science/69](images/error_1_2_type.png)
+![https://t.me/stats_for_science/69](images/error_1_2_type.jpg)
 
 Разберем разные виды поправок подробнее.
 

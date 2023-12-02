@@ -99,6 +99,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#определение-fdr" id="toc-определение-fdr" class="nav-link" data-scroll-target="#определение-fdr">Определение FDR</a></li>
   <li><a href="#расчет-fdr" id="toc-расчет-fdr" class="nav-link" data-scroll-target="#расчет-fdr">Расчет FDR</a></li>
   </ul></li>
+  <li><a href="#как-выбрать-поправку" id="toc-как-выбрать-поправку" class="nav-link" data-scroll-target="#как-выбрать-поправку">Как выбрать поправку?</a></li>
   </ul>
 </nav>
 </div>
@@ -134,10 +135,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 <div style="text-align: right">
-<p><em>Время чтения ~10 минут</em></p>
+<p><em>Время чтения ~20 минут</em></p>
 </div>
-<p>Разберем, что такое поправки, зачем они нужны, и как работают основные поправки, которые часто используются в науке и индустрии.</p>
-<p>Самое первое, на что нужно акцентировать внимание при разговоре о поправках на множественное тестирование это:</p>
+<p>Разберем, что такое поправки на множественное тестирование, зачем они нужны, как работают основные методы, которые часто используются в науке и индустрии.</p>
+<p>Самое первое, с чего нужно начать разбор поправок на множественное тестирование это:</p>
 <section id="классификация-поправок-на-множественное-тестирование" class="level2">
 <h2 class="anchored" data-anchor-id="классификация-поправок-на-множественное-тестирование">Классификация поправок на множественное тестирование</h2>
 <p>Существует 2 принципиально разных подхода к поправкам на множественное тестирование.</p>
@@ -145,7 +146,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><p>Контроль групповой <strong>вероятности</strong> ошибки I рода (FWER, family-wise error rate)</p>
 <ul>
 <li><p>Тесты, которые поправляют значимость у набора p-value (поправка Бонферрони, Холма, Шидака и тд.) вне зависимости, какой тест был применен до этого;</p></li>
-<li><p>Тесты для попарных сравнений групп: пост-хоки (поправка Тьюки, поправка Данна, тест Фишера LSD и тд).</p></li>
+<li><p>Тесты для попарных сравнений групп: пост-хоки (поправка Тьюки, поправка Даннета, тест Фишера LSD и тд).</p></li>
 </ul></li>
 <li><p>Контроль <strong>доли</strong> ложных открытий (FDR, false discovery rate): поправка Benjamini-Hochberg, поправка Benjamini-Yekutieli.</p></li>
 </ul>
@@ -161,9 +162,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="fwer-family-wise-error-rate" class="level1">
 <h1>FWER – family-wise error rate</h1>
 <p>FWER – групповая вероятность ошибки I рода. Мне больше нравится определение, что это вероятность совершить <strong>хоть одну</strong> ошибку первого рода в нескольких тестах. Обычно рассчитывается для серии тестов (но можно посчитать FWER и для одного теста: вероятность будет равна <span class="math inline">\(\alpha\)</span>).</p>
-<p><span class="math display">\[
+<p><span id="eq-fwer"><span class="math display">\[
 FWER = 1 - (1-\alpha)^k, где
-\]</span></p>
+\tag{1}\]</span></span></p>
 <p><em>k</em> - количество тестов, <span class="math inline">\(\alpha\)</span> - уровень значимости.</p>
 <p>Для корректного применения формулы тесты должны быть <u>независимыми</u>.</p>
 <p>Если это не так, то посчитать точный FWER можно с помощью симуляции, а по формуле вычисляется верхняя граница (то есть максимально возможное значение вероятности совершить ошибку I рода).</p>
@@ -175,7 +176,7 @@ FWER = 1 - (1-\alpha)^k, где
 <p>Во многих ситуациях тесты являются зависимыми, тем не менее при множественном тестировании даже для зависимых тестов ошибка первого рода превышает пороговое 0.05.</p>
 <section id="симуляция-независимых-тестов-для-подсчета-fwer" class="level2">
 <h2 class="anchored" data-anchor-id="симуляция-независимых-тестов-для-подсчета-fwer">Симуляция независимых тестов для подсчета FWER</h2>
-<p>Генерируем заданное количество раз (5, 10, 50, 100) выборки размером 100 элементов из одной генеральной совокупности (стандартного нормального распределения) и сравниваем их t-тестом. Повторяем это 10000 раз, чтобы оценить, долю случаев, где мы получили p-value &lt; 0.05 (ложнопозитивный результат).</p>
+<p>Генерируем заданное количество раз (5, 10, 50, 100) выборки размером 100 элементов из одной генеральной совокупности (стандартного нормального распределения) и сравниваем их t-тестом. Повторяем это 10000 раз, чтобы оценить долю случаев, где мы получили p-value &lt; 0.05 (ложнопозитивный результат).</p>
 <p>Тесты независимые, поскольку каждый раз извлекаем новую выборку, следовательно, мы ожидаем увидеть результат, близкий к рассчитанному по формуле выше.</p>
 <div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-2_123469fe484e339cc20b3b7004c1fbcc">
 <details>
@@ -217,54 +218,53 @@ FWER = 1 - (1-\alpha)^k, где
 </div>
 </div>
 <p><span class="math inline">\(FWER = 1 - (1-\alpha)^k = 1 - (1-0.05) ^{100} = 0.994\)</span></p>
-<p>Действительно, при симуляции значения сходятся с теоретически рассчитанными. Что можно сделать, чтобы избежать ошибок первого рода?</p>
+<p>Действительно, при симуляции значения FWER сходятся с теоретически рассчитанными. Что можно сделать, чтобы избежать ошибок первого рода?</p>
 </section>
 <section id="поправка-бонферрони-bonferroni" class="level2">
 <h2 class="anchored" data-anchor-id="поправка-бонферрони-bonferroni">Поправка Бонферрони (Bonferroni)</h2>
 <p>Самый простой способ контролировать вероятность ошибки первого рода – это изменить критический уровень значимости <span class="math inline">\(\alpha\)</span>.</p>
-<p><span id="eq-fwer_bonf"><span class="math display">\[ FWER = 1 - (1-\frac{\alpha}{k})^k,  \tag{1}\]</span></span></p>
+<p><span id="eq-fwer_bonf"><span class="math display">\[ FWER = 1 - (1-\frac{\alpha}{k})^k,  \tag{2}\]</span></span></p>
 <p>Делим <span class="math inline">\(\alpha\)</span> на число тестов -&gt; получаем новый p-уровень значимости, ниже которого результаты будут считаться статистически значимыми.</p>
 <p>Или умножаем каждое p-value на количество тестов -&gt; если поправленное p-value &lt; 0.05, то результат считается статистически значимым.</p>
-<p>При таком подходе мы контролируем вероятность ошибки первого рода, однако завышаем вероятность ошибки второго рода -&gt; уменьшаем мощность теста.</p>
+<p>При таком подходе мы контролируем вероятность совершить <em>хоть одну</em> ошибку первого рода на уровне 0.05, однако сильно завышаем вероятность ошибки второго рода (то есть не найти значимый эффект, где он на самом деле есть), следовательно, уменьшаем мощность теста.</p>
 <p>Проверим FWER после поправки.</p>
-<div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-6_0b99b4712e5accc364b7d2ba0259b35f">
+<div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-6_761004d28192680ca5604e2b17aff08f">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">replicate</span>(<span class="dv">10000</span>, <span class="fu">sum</span>(<span class="fu">replicate</span>(<span class="dv">5</span>, <span class="fu">t.test</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">rnorm</span>(<span class="dv">100</span>))<span class="sc">$</span>p.value) <span class="sc">&lt;</span> <span class="fl">0.05</span><span class="sc">/</span><span class="dv">5</span>) <span class="sc">!=</span> <span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">'Для 5 тестов FWER по Бонферрони: '</span>, <span class="fu">mean</span>(<span class="fu">replicate</span>(<span class="dv">10000</span>, <span class="fu">sum</span>(<span class="fu">replicate</span>(<span class="dv">5</span>, <span class="fu">t.test</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">rnorm</span>(<span class="dv">100</span>))<span class="sc">$</span>p.value) <span class="sc">&lt;</span> <span class="fl">0.05</span><span class="sc">/</span><span class="dv">5</span>) <span class="sc">!=</span> <span class="dv">0</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.0507</code></pre>
+<pre><code>[1] "Для 5 тестов FWER по Бонферрони:  0.0507"</code></pre>
 </div>
 </div>
-<div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-7_9218ee53a120c580f395867e057c80c8">
+<div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-7_5eb703b7d05b1325cc72bdf2d9ee5049">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">replicate</span>(<span class="dv">10000</span>, <span class="fu">sum</span>(<span class="fu">replicate</span>(<span class="dv">10</span>, <span class="fu">t.test</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">rnorm</span>(<span class="dv">100</span>))<span class="sc">$</span>p.value) <span class="sc">&lt;</span> <span class="fl">0.05</span><span class="sc">/</span><span class="dv">10</span>) <span class="sc">!=</span> <span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">'Для 10 тестов FWER по Бонферрони: '</span>, <span class="fu">mean</span>(<span class="fu">replicate</span>(<span class="dv">10000</span>, <span class="fu">sum</span>(<span class="fu">replicate</span>(<span class="dv">10</span>, <span class="fu">t.test</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">rnorm</span>(<span class="dv">100</span>))<span class="sc">$</span>p.value) <span class="sc">&lt;</span> <span class="fl">0.05</span><span class="sc">/</span><span class="dv">10</span>) <span class="sc">!=</span> <span class="dv">0</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.0509</code></pre>
+<pre><code>[1] "Для 10 тестов FWER по Бонферрони:  0.0509"</code></pre>
 </div>
 </div>
-<div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-8_ed868c25d1f729588a0ff0983c23cf1b">
+<div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-8_727dad3dd8e27fc8abcdc24d169b575d">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">replicate</span>(<span class="dv">10000</span>, <span class="fu">sum</span>(<span class="fu">replicate</span>(<span class="dv">50</span>, <span class="fu">t.test</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">rnorm</span>(<span class="dv">100</span>))<span class="sc">$</span>p.value) <span class="sc">&lt;</span> <span class="fl">0.05</span><span class="sc">/</span><span class="dv">50</span>) <span class="sc">!=</span> <span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">'Для 50 тестов FWER по Бонферрони: '</span>, <span class="fu">mean</span>(<span class="fu">replicate</span>(<span class="dv">10000</span>, <span class="fu">sum</span>(<span class="fu">replicate</span>(<span class="dv">50</span>, <span class="fu">t.test</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">rnorm</span>(<span class="dv">100</span>))<span class="sc">$</span>p.value) <span class="sc">&lt;</span> <span class="fl">0.05</span><span class="sc">/</span><span class="dv">50</span>) <span class="sc">!=</span> <span class="dv">0</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.0491</code></pre>
+<pre><code>[1] "Для 50 тестов FWER по Бонферрони:  0.0491"</code></pre>
 </div>
 </div>
-<div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-9_2a6f548f36ffbab090a2880c7cb58ea4">
+<div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-9_e0c6dd5ae37c6b81d449ea34dbc5f9fc">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(<span class="fu">replicate</span>(<span class="dv">10000</span>, <span class="fu">sum</span>(<span class="fu">replicate</span>(<span class="dv">100</span>, <span class="fu">t.test</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">rnorm</span>(<span class="dv">100</span>))<span class="sc">$</span>p.value) <span class="sc">&lt;</span> <span class="fl">0.05</span><span class="sc">/</span><span class="dv">100</span>) <span class="sc">!=</span> <span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">'Для 100 тестов FWER по Бонферрони: '</span>, <span class="fu">mean</span>(<span class="fu">replicate</span>(<span class="dv">10000</span>, <span class="fu">sum</span>(<span class="fu">replicate</span>(<span class="dv">100</span>, <span class="fu">t.test</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">rnorm</span>(<span class="dv">100</span>))<span class="sc">$</span>p.value) <span class="sc">&lt;</span> <span class="fl">0.05</span><span class="sc">/</span><span class="dv">100</span>) <span class="sc">!=</span> <span class="dv">0</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.049</code></pre>
+<pre><code>[1] "Для 100 тестов FWER по Бонферрони:  0.049"</code></pre>
 </div>
 </div>
-<p>Контролирует вероятность совершить <em>хоть 1</em> ошибку I рода на заданном уровне 0,05. В итоге страдает мощность теста.</p>
-<p>Поправка Бонферрони используется редко, в основном в областях, где цена ложнопозитивного результата очень высока, например в исследованиях GWAS на человеке. В остальных случаях рекомендуют использовать менее консервативные поправки.</p>
+<p>Поправка Бонферрони используется редко, в основном в областях, где цена ошибок первого рода (ложнопозитивного результата) очень высока, например в исследованиях GWAS на человеке. В остальных случаях рекомендуют использовать менее консервативные поправки.</p>
 </section>
 <section id="поправка-холма-holm" class="level2">
 <h2 class="anchored" data-anchor-id="поправка-холма-holm">Поправка Холма (Holm)</h2>
@@ -325,7 +325,7 @@ FWER = 1 - (1-\alpha)^k, где
 </table>
 </div>
 </div>
-<p>Далее нужно задать, что поправленные p-value могут только возрастать, и при этом p-value заменяется на бОльшее, поэтому процедура поправки Холма называется пошаговой нисходящей - step-down.</p>
+<p>Далее нужно задать, что поправленные p-value могут только возрастать, и при этом p-value заменяется на бОльшее, поэтому процедура поправки Холма называется пошаговой нисходящей – step-down.</p>
 <div class="cell">
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
@@ -392,23 +392,20 @@ FWER = 1 - (1-\alpha)^k, где
 <pre><code>[1] 0.018 0.020 0.160 0.540 0.540 0.870</code></pre>
 </div>
 </div>
-<p>Поскольку для самого <strong>минимального</strong> <strong>p-value</strong> поправленное p-value <strong>такое же</strong> как и у Бонферрони, то поправка Холма контролирует FWER на <strong>том же уровне 0.05</strong> (что и поправка Бонферрони!), при этом не так сильно снижает мощность тестов.</p>
+<p>Поскольку для самого <strong>минимального</strong> <strong>p-value</strong> поправленное p-value <strong>такое же</strong> как и у Бонферрони, то поправка Холма контролирует FWER (вероятность совершить хоть 1 ошибку первого рода) на <strong>том же уровне 0.05</strong>, что и поправка Бонферрони, при этом не так сильно снижает мощность тестов.</p>
 <p>Проверим на 100 тестах:</p>
-<div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-14_533ccfbd387575887406c24437c8ab0b">
-<details>
-<summary>Code</summary>
+<div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-14_1a82de8785ee223688e8d88398d7f72b">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">replicate</span>(<span class="dv">1000</span>, <span class="fu">sum</span>(<span class="fu">replicate</span>(<span class="dv">100</span>, <span class="fu">t.test</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">rnorm</span>(<span class="dv">100</span>))<span class="sc">$</span>p.value) <span class="sc">%&gt;%</span> </span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">p.adjust</span>(<span class="at">method =</span> <span class="st">'holm'</span>) <span class="sc">&lt;</span> <span class="fl">0.05</span>) <span class="sc">!=</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.051</code></pre>
 </div>
 </div>
-<p>Таким образом, мы все еще контролируем ожидаемую групповую вероятность ошибки первого рода на уровне 0.05, и оставляем больше значимых результатов, по сравнению с поправкой Бонферрони.</p>
+<p>Таким образом, мы все еще контролируем ожидаемую групповую вероятность ошибки первого рода на уровне 0.05, и оставляем больше значимых результатов, по сравнению с поправкой Бонферрони. Поэтому во многих случаях рекомендуют использовать именно поправку Холма для множественных сравнений.</p>
 <p>Ссылка на оригинальную статью:</p>
 <p>Holm, S. (1979). A simple sequentially rejective multiple test procedure. <em>Scandinavian Journal of Statistics</em>, <strong>6</strong>, 65–70. <a href="https://www.jstor.org/stable/4615733" class="uri">https://www.jstor.org/stable/4615733</a>.</p>
-<p>Теперь перейдем к поправкам, которые используются в конкретных постхок тестах.</p>
+<p>Теперь перейдем к поправкам, которые используются в конкретных тестах.</p>
 </section>
 <section id="тест-фишера-lsd-least-significant-difference" class="level2">
 <h2 class="anchored" data-anchor-id="тест-фишера-lsd-least-significant-difference">Тест Фишера LSD (Least significant difference)</h2>
@@ -417,18 +414,25 @@ FWER = 1 - (1-\alpha)^k, где
 <p><span class="math display">\[
 t = \frac{\overline{X_1}-\overline{X2}}{\sqrt{MSE(\frac{1}{n_1}+\frac{1}{n_2})}}, где
 \]</span></p>
-<p><span class="math inline">\(n_1\)</span>, <span class="math inline">\(n_2\)</span> - размер групп 1 и 2, <span class="math inline">\(MSE\)</span> - mean square error из таблицы ANOVA, то есть общая дисперсия между всеми группами.</p>
+<p><span class="math inline">\(\overline{X_1}\)</span>, <span class="math inline">\(\overline{X_2}\)</span> – средние групп 1 и 2, <span class="math inline">\(n_1\)</span>, <span class="math inline">\(n_2\)</span> – размер групп 1 и 2, <span class="math inline">\(MSE\)</span> – mean square error из таблицы ANOVA, то есть общая дисперсия между всеми группами.</p>
 <p>Для трех групп имеет большую мощность чем Тьюки. Но если групп больше чем 3, то контролирует FWER на уровне больше 0.05 и следовательно к использованию не рекомендуется.</p>
 <p>Подробнее, почему это так, можно посмотреть <a href="https://www.youtube.com/watch?v=cAltDstP6ik&amp;list=PLLTSM0eKjC2dvba2A0VCUogEGDch6cXFN&amp;index=5">здесь</a>.</p>
 </section>
 <section id="поправка-тьюки-tukey-tukeyhsd" class="level2">
 <h2 class="anchored" data-anchor-id="поправка-тьюки-tukey-tukeyhsd">Поправка Тьюки (Tukey, TukeyHSD)</h2>
 <p>Используется как постхок тест вне зависимости от значимости ANOVA (подробнее ниже) для сравнения средних групп между собой, чтобы узнать <em>какие именно</em> группы различаются. Также нет ограничения на количество групп, участвующих в сравнении.</p>
-<p>В этом тесте сравнивается каждая группа с каждой, поэтому если нам это не нужно, то мощность теста будет меньше, чем например у теста Даннета, который сравнивает группы только с одной.</p>
+<p>В этом тесте сравнивается каждая группа с каждой, поэтому у него будет минимальная мощность, так как тестов больше всего. Если нам не нужно сравнивать каждую группу с каждой, то лучше использовать тест Даннета, который сравнивает одну группу с остальными и имеет более высокую мощность.</p>
 <p>Формула расчета тестовой статистики:</p>
 <p><span class="math display">\[ q_s = \frac{M_1 - M_2}{\sqrt{\frac{SS_w}{2}(\frac{1}{n_A}+\frac{1}{n_B})}},  \]</span></p>
 <p>где M<sub>1</sub> &gt; M<sub>2</sub> (средние в группе), <em>nA</em>, <em>nB</em> - размер 1 и 2 выборки, <span class="math inline">\(SS_W\)</span> - внутригрупповая сумма квадратов в ANOVA.</p>
-<p>Для проверки гипотезы используется studentized range distribution, студентизированное распределение.</p>
+<p>Для проверки гипотезы используется studentized range distribution, студентизированное распределение (не путать с t-распределением).</p>
+<p>У теста Тьюки есть допущения к использованию:</p>
+<ul>
+<li><p>Независимость наблюдений</p></li>
+<li><p>Примерное равенство дисперсий</p></li>
+<li><p>Примерно нормальное распределение данных в группах</p></li>
+</ul>
+<p>Если допущения про нормальность распределения и равенство дисперсий не выполняются, то можно использовать непараметрические аналоги теста.</p>
 <div class="callout callout-style-default callout-tip callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -439,7 +443,7 @@ t = \frac{\overline{X_1}-\overline{X2}}{\sqrt{MSE(\frac{1}{n_1}+\frac{1}{n_2})}}
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Тест Тьюки вовсе необязательно использовать <em>только</em> после значимой ановы, как нередко пишут в учебниках, однако в тесте при расчете используется SS<sub>W</sub> (sum of squares within, внутригрупповая сумма квадратов) и количество степеней свободы из таблицы ANOVA. Поэтому в докомпьютерное время расчет критерия Тьюки был <u>проще</u> после дисперсионного анализа, и при незначимой анове сравнивать группы между собой уже не имело смысла. Сейчас в R в функции <code>TukeyHSD()</code> для расчета критерия Тьюки в качестве инпута используется результат ановы, но никто не запрещает применять тест и если анова оказалась незначимой.</p>
+<p>Тест Тьюки вовсе необязательно использовать <em>только</em> после значимой ановы, как нередко пишут в учебниках, просто в тесте при расчете используется внутригрупповая сумма квадратов и количество степеней свободы из таблицы ANOVA. Поэтому в докомпьютерное время расчет критерия Тьюки был <u>проще</u> после дисперсионного анализа, и при незначимой анове сравнивать группы между собой уже не имело смысла. Сейчас в R в функции <code>TukeyHSD()</code> для расчета критерия Тьюки в качестве инпута используется результат ановы, но никто не запрещает применять тест и если анова оказалась незначимой.</p>
 <p>Также может быть и ситуация, когда по результатам ANOVA получилось, что средние групп различаются между собой, но при этом по Тьюки нет, можно почитать <a href="https://stats.stackexchange.com/questions/16665/how-can-i-get-a-significant-overall-anova-but-no-significant-pairwise-difference">здесь</a>, почему так бывает.</p>
 </div>
 </div>
@@ -447,16 +451,16 @@ t = \frac{\overline{X_1}-\overline{X2}}{\sqrt{MSE(\frac{1}{n_1}+\frac{1}{n_2})}}
 <section id="тест-данна-dunn" class="level2">
 <h2 class="anchored" data-anchor-id="тест-данна-dunn">Тест Данна (Dunn)</h2>
 <p>Является непараметрическим постхок тестом, аналогом теста Тьюки, для ситуаций, когда его допущения не выполняются.</p>
-<p>По сути сравнивает средний ранг групп, вычисленных после теста Краскелла-Уоллиса (Kruskal-Wallis), таким образом как бы учитывая общую дисперсию между группами (чего не будет происходить в попарных тестах Манна-Уитни). Далее полученные p-value должны быть поправлены любым методом, например Бонферрони, Холм, FDR, по умолчанию используется поправка Холма.</p>
-<p>Лично мне это в свое время сломало мозг, что это поправка в поправке, вроде используем постхок тест, но при этом его результат тоже нужно поправить тестом на выбор.</p>
-<p>Как альтернатива, как непараметрический аналог Тьюки можно использовать попарные тесты Манна-Уитни с поправками.</p>
+<p>По сути сравнивает средний ранг групп, вычисленных после теста Краскелла-Уоллиса (Kruskal-Wallis), таким образом как бы учитывая общую дисперсию между группами (чего не будет происходить в попарных тестах Манна-Уитни). Далее полученные p-value должны быть поправлены любым методом, например Бонферрони, Холм, FDR.</p>
+<p>Лично мне это в свое время сломало мозг, что это поправка в поправке, вроде используем постхок тест, но при этом его результат тоже нужно поправить тестом на выбор (в функции <code>dunn_test()</code> из пакета <code>rstatix</code> поправка Холма происходит автоматически).</p>
+<p>Как альтернатива, в качестве непараметрического аналога Тьюки можно использовать попарные тесты Манна-Уитни с поправками, однако ранги будут рассчитаны отдельно для каждого теста.</p>
 <p>Оригинальная статья про метод:</p>
 <p>Dunn, O. J. (1964) Multiple comparisons using rank sums Technometrics, 6(3):241-252.</p>
 </section>
 <section id="тест-даннета-dunnet" class="level2">
 <h2 class="anchored" data-anchor-id="тест-даннета-dunnet">Тест Даннета (Dunnet)</h2>
-<p>С помощью этого теста сравниваем одну группу с остальными группами, например, когда задача сравнить контрольную группу и несколько воздействий, и не нужно сравнение каждой группы с каждой</p>
-<p>Например, у нас 4 группы, из которой 1 контрольная, с которой мы проводим сравнения. У нас будет всего 3 сравнения: control - A, control - B, control - C, что увеличивает мощность теста.</p>
+<p>С помощью этого теста сравнивают одну группу с остальными группами, например, когда задача сравнить контрольную группу и несколько воздействий, и не нужно сравнение каждой группы с каждой</p>
+<p>Например, у нас 4 группы, из которой одна группа контрольная, с которой мы проводим сравнения. У нас будет всего 3 сравнения: control - A, control - B, control - C, что увеличивает мощность теста.</p>
 <p>Для теста Даннета должны соблюдаться такие же допущения, как и для теста Тьюки: независимость наблюдений, примерно равная дисперсия в группах и нормальное распределение.</p>
 <p>Посмотреть детально можно <a href="https://www.youtube.com/watch?v=5pPd2rLS1GU&amp;list=PLLTSM0eKjC2dvba2A0VCUogEGDch6cXFN&amp;index=8">здесь</a>.</p>
 <p>Теперь перейдем к принципиально другому подходу поправок – контроле доли ложных открытий (FDR).</p>
@@ -466,6 +470,8 @@ t = \frac{\overline{X_1}-\overline{X2}}{\sqrt{MSE(\frac{1}{n_1}+\frac{1}{n_2})}}
 <h1>FDR - false discovery rate</h1>
 <section id="определение-fdr" class="level2">
 <h2 class="anchored" data-anchor-id="определение-fdr">Определение FDR</h2>
+<p>FDR, false discovery rate – доля ложнопозитивных результатов.</p>
+<p>В скрининговых экспериментах, таких как анализ RNA-seq данных важнее контролировать долю ложнопозитивных результатов (FDR), чем вероятность совершить хоть одно ложное открытие.</p>
 <table class="table">
 <colgroup>
 <col style="width: 26%">
@@ -493,16 +499,17 @@ t = \frac{\overline{X_1}-\overline{X2}}{\sqrt{MSE(\frac{1}{n_1}+\frac{1}{n_2})}}
 </tbody>
 </table>
 <p><span class="math display">\[ FDR = \frac{FP}{FP + TP} \]</span></p>
-<p>Подробнее в этом <a href="https://www.youtube.com/watch?v=-oIkIdhSNeU">видео</a></p>
+<p>Подробнее в этом <a href="https://www.youtube.com/watch?v=-oIkIdhSNeU">видео</a>.</p>
 </section>
 <section id="расчет-fdr" class="level2">
 <h2 class="anchored" data-anchor-id="расчет-fdr">Расчет FDR</h2>
+<p>Расмотрим контроль FDR по методу Бенджамини-Хохберга (Benjamini-Hochberg), так как чаще всего используется. Также FDR можно посчитать с помощью метода Benjamini-Yekutieli, но он имеет меньшую мощность и используется реже.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>p_values <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.361</span>, <span class="fl">0.387</span>, <span class="fl">0.005</span>, <span class="fl">0.009</span>, <span class="fl">0.022</span>, <span class="fl">0.051</span>, <span class="fl">0.101</span>, <span class="fl">0.019</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ul>
-<li>Сортируем и ранжируем p-value по возрастанию</li>
-<li>Каждое p-value умножаем на <span class="math inline">\(\frac{m}{rank}\)</span>, где <span class="math inline">\(m\)</span> – количество тестов, <span class="math inline">\(rank\)</span> – ранг p-value</li>
+<li>Сортируем и ранжируем p-value по возрастанию;</li>
+<li>Каждое p-value умножаем на <span class="math inline">\(\frac{m}{rank}\)</span>, где <span class="math inline">\(m\)</span> – количество тестов, <span class="math inline">\(rank\)</span> – ранг p-value.</li>
 </ul>
 <div class="cell">
 <div class="cell-output-display">
@@ -568,7 +575,7 @@ t = \frac{\overline{X_1}-\overline{X2}}{\sqrt{MSE(\frac{1}{n_1}+\frac{1}{n_2})}}
 </table>
 </div>
 </div>
-<p>Итоговое FDR вычисляется так, чтобы p-value не убывали, но при этом приводится в меньшую сторону (в отличие от поправки Холма), поэтому это называется восходящей процедурой – step-up.</p>
+<p>Итоговое FDR вычисляется так, чтобы p-value не убывали, но при этом приводится в меньшую сторону (в отличие от поправки Холма), поэтому процедура называется пошаговой восходящей – step-up.</p>
 <div class="cell">
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
@@ -651,11 +658,17 @@ t = \frac{\overline{X_1}-\overline{X2}}{\sqrt{MSE(\frac{1}{n_1}+\frac{1}{n_2})}}
 </table>
 </div>
 </div>
-<p>FDR в основном</p>
-<p>Как выбрать поправку?</p>
-<p>Все зависит от задачи</p>
-<p>Посмотреть подробнее про все поправки на множественное тестирование можно в <a href="https://www.youtube.com/playlist?list=PLLTSM0eKjC2dvba2A0VCUogEGDch6cXFN">этой серии</a> видео от замечательного канала по статистике <span class="citation" data-cites="TileStats">@TileStats</span></p>
+<p>FDR в основном используется в скрининговых экспериментах, где основные результаты могут быть проверены уже более прицельным экспериментом (например некоторые дифференциально экспрессирующиеся гены по результатам RNA-seq проверяют количественной ПЦР).</p>
 </section>
+</section>
+<section id="как-выбрать-поправку" class="level1">
+<h1>Как выбрать поправку?</h1>
+<p>Все зависит от задачи. Лично я стараюсь ответить на вопрос, что в конкретном случае важнее контролировать - FWER или FDR. Разумно использовать FDR в массовых экспериментах, где количество тестов исчисляется десятками тысяч, при этом найти ложнопозитивный результат не так страшно. FWER же контролируем в более fine-scale экспериментах, где нам не хотелось бы совершить ошибку первого рода.</p>
+<p>Если у нас есть конкретный тест, например Тьюки для сравнения групп между собой, то обычно его и использую, если же ситуация более нестандартная, допустим после бутстреп теста нужно сделать поправку на множественное тестирование, то здесь я бы использовала поправку Холма.</p>
+<p>В любом случае нужно опираться на особенности и ограничения тестов, которые я постаралась расписать, надеюсь это поможет выбрать тест мудро.</p>
+<p>Посмотреть подробнее про все поправки на множественное тестирование можно в <a href="https://www.youtube.com/playlist?list=PLLTSM0eKjC2dvba2A0VCUogEGDch6cXFN">этой серии</a> видео от замечательного канала по статистике @<a href="https://www.youtube.com/@tilestats">TileStats</a></p>
+<p>А также подписывайтесь на телеграм-канал https://t.me/stats_for_science, делитесь постом, пишите комментарии!</p>
+<p><img src="figures/logo.jpg" class="img-fluid"></p>
 </section>
 
 </main>

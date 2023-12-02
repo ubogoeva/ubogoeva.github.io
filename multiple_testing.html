@@ -137,8 +137,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div style="text-align: right">
 <p><em>Время чтения ~20 минут</em></p>
 </div>
-<p>Разберем, что такое поправки на множественное тестирование, зачем они нужны, как работают основные методы, которые часто используются в науке и индустрии.</p>
-<p>Самое первое, с чего нужно начать разбор поправок на множественное тестирование это:</p>
+<p>Разберем, что такое поправки на множественное тестирование, зачем они нужны, как работают основные методы, которые часто используются в науке и индустрии, а также на что опираться при выборе поправки в своем исследовании.</p>
+<p>Начнем разбор с классификации.</p>
 <section id="классификация-поправок-на-множественное-тестирование" class="level2">
 <h2 class="anchored" data-anchor-id="классификация-поправок-на-множественное-тестирование">Классификация поправок на множественное тестирование</h2>
 <p>Существует 2 принципиально разных подхода к поправкам на множественное тестирование.</p>
@@ -166,14 +166,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 FWER = 1 - (1-\alpha)^k, где
 \tag{1}\]</span></span></p>
 <p><em>k</em> - количество тестов, <span class="math inline">\(\alpha\)</span> - уровень значимости.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p>Для корректного применения формулы тесты должны быть <u>независимыми</u>.</p>
+</div>
+</div>
 <p>Если это не так, то посчитать точный FWER можно с помощью симуляции, а по формуле вычисляется верхняя граница (то есть максимально возможное значение вероятности совершить ошибку I рода).</p>
 <p>Пример ситуаций, когда тесты зависимы:</p>
 <ul>
 <li><p>Мы собрали две группы образцов и измерили у них 20 параметров. Тесты зависимы, поскольку пул образцов один и тот же для каждого измеренного параметра.</p></li>
 <li><p>У нас 3 группы, делаем попарное сравнение каждой группы с каждой. Тесты зависимы, поскольку одна и та же группа участвует в двух тестах.</p></li>
 </ul>
-<p>Во многих ситуациях тесты являются зависимыми, тем не менее при множественном тестировании даже для зависимых тестов ошибка первого рода превышает пороговое 0.05.</p>
+<p>Во многих ситуациях тесты являются зависимыми, тем не менее, при множественном тестировании даже для зависимых тестов ошибка первого рода превышает пороговое 0.05.</p>
 <section id="симуляция-независимых-тестов-для-подсчета-fwer" class="level2">
 <h2 class="anchored" data-anchor-id="симуляция-независимых-тестов-для-подсчета-fwer">Симуляция независимых тестов для подсчета FWER</h2>
 <p>Генерируем заданное количество раз (5, 10, 50, 100) выборки размером 100 элементов из одной генеральной совокупности (стандартного нормального распределения) и сравниваем их t-тестом. Повторяем это 10000 раз, чтобы оценить долю случаев, где мы получили p-value &lt; 0.05 (ложнопозитивный результат).</p>
@@ -225,8 +237,8 @@ FWER = 1 - (1-\alpha)^k, где
 <p>Самый простой способ контролировать вероятность ошибки первого рода – это изменить критический уровень значимости <span class="math inline">\(\alpha\)</span>.</p>
 <p><span id="eq-fwer_bonf"><span class="math display">\[ FWER = 1 - (1-\frac{\alpha}{k})^k,  \tag{2}\]</span></span></p>
 <p>Делим <span class="math inline">\(\alpha\)</span> на число тестов -&gt; получаем новый p-уровень значимости, ниже которого результаты будут считаться статистически значимыми.</p>
-<p>Или умножаем каждое p-value на количество тестов -&gt; если поправленное p-value &lt; 0.05, то результат считается статистически значимым.</p>
-<p>При таком подходе мы контролируем вероятность совершить <em>хоть одну</em> ошибку первого рода на уровне 0.05, однако сильно завышаем вероятность ошибки второго рода (то есть не найти значимый эффект, где он на самом деле есть), следовательно, уменьшаем мощность теста.</p>
+<p>Или умножаем каждое p-value на количество тестов, и если поправленное p-value &lt; 0.05, то результат считается статистически значимым.</p>
+<p>При таком подходе мы контролируем вероятность совершить <em>хоть одну</em> ошибку первого рода на уровне 0.05, однако сильно завышаем вероятность ошибки <u>второго рода</u> (то есть не найти значимый эффект, где он на самом деле есть), следовательно, уменьшаем мощность теста.</p>
 <p>Проверим FWER после поправки.</p>
 <div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-6_761004d28192680ca5604e2b17aff08f">
 <details>
@@ -264,6 +276,7 @@ FWER = 1 - (1-\alpha)^k, где
 <pre><code>[1] "Для 100 тестов FWER по Бонферрони:  0.049"</code></pre>
 </div>
 </div>
+<p>Да, мы контролируем FWER на заданном уровне 0.05.</p>
 <p>Поправка Бонферрони используется редко, в основном в областях, где цена ошибок первого рода (ложнопозитивного результата) очень высока, например в исследованиях GWAS на человеке. В остальных случаях рекомендуют использовать менее консервативные поправки.</p>
 </section>
 <section id="поправка-холма-holm" class="level2">
@@ -272,7 +285,7 @@ FWER = 1 - (1-\alpha)^k, где
 <div class="cell">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>p_value <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.004</span>, <span class="fl">0.87</span>, <span class="fl">0.003</span>, <span class="fl">0.04</span>, <span class="fl">0.18</span>, <span class="fl">0.24</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Сортируем и ранжируем p-value по убыванию, далее по формуле умножаем каждое p-value на <span class="math inline">\((m+1-rank)\)</span>, где <span class="math inline">\(m\)</span> - количество тестов, <span class="math inline">\(rank\)</span> - ранг p-value.</p>
+<p>Сортируем и ранжируем p-value по возрастанию, далее по формуле умножаем каждое p-value на <span class="math inline">\((m+1-rank)\)</span>, где <span class="math inline">\(m\)</span> - количество тестов, <span class="math inline">\(rank\)</span> - ранг p-value.</p>
 <div class="cell">
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
@@ -392,7 +405,7 @@ FWER = 1 - (1-\alpha)^k, где
 <pre><code>[1] 0.018 0.020 0.160 0.540 0.540 0.870</code></pre>
 </div>
 </div>
-<p>Поскольку для самого <strong>минимального</strong> <strong>p-value</strong> поправленное p-value <strong>такое же</strong> как и у Бонферрони, то поправка Холма контролирует FWER (вероятность совершить хоть 1 ошибку первого рода) на <strong>том же уровне 0.05</strong>, что и поправка Бонферрони, при этом не так сильно снижает мощность тестов.</p>
+<p>Поскольку для самого <strong>минимального</strong> <strong>p-value</strong> поправленное p-value <strong>такое же</strong> как и в Бонферрони, то поправка Холма контролирует FWER на <strong>том же уровне 0.05</strong>, что и поправка Бонферрони, при этом не так сильно снижает мощность тестов.</p>
 <p>Проверим на 100 тестах:</p>
 <div class="cell" data-hash="multiple_testing_cache/html/unnamed-chunk-14_1a82de8785ee223688e8d88398d7f72b">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">replicate</span>(<span class="dv">1000</span>, <span class="fu">sum</span>(<span class="fu">replicate</span>(<span class="dv">100</span>, <span class="fu">t.test</span>(<span class="fu">rnorm</span>(<span class="dv">100</span>), <span class="fu">rnorm</span>(<span class="dv">100</span>))<span class="sc">$</span>p.value) <span class="sc">%&gt;%</span> </span>
@@ -402,9 +415,20 @@ FWER = 1 - (1-\alpha)^k, где
 <pre><code>[1] 0.051</code></pre>
 </div>
 </div>
-<p>Таким образом, мы все еще контролируем ожидаемую групповую вероятность ошибки первого рода на уровне 0.05, и оставляем больше значимых результатов, по сравнению с поправкой Бонферрони. Поэтому во многих случаях рекомендуют использовать именно поправку Холма для множественных сравнений.</p>
-<p>Ссылка на оригинальную статью:</p>
+<p>Таким образом, мы все еще контролируем вероятность совершить хоть одну ошибку первого рода на уровне 0.05, и оставляем больше значимых результатов, по сравнению с поправкой Бонферрони. Поэтому во многих случаях рекомендуют использовать именно поправку Холма для множественных сравнений.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Ссылка на оригинальную статью:
+</div>
+</div>
+<div class="callout-body-container callout-body">
 <p>Holm, S. (1979). A simple sequentially rejective multiple test procedure. <em>Scandinavian Journal of Statistics</em>, <strong>6</strong>, 65–70. <a href="https://www.jstor.org/stable/4615733" class="uri">https://www.jstor.org/stable/4615733</a>.</p>
+</div>
+</div>
 <p>Теперь перейдем к поправкам, которые используются в конкретных тестах.</p>
 </section>
 <section id="тест-фишера-lsd-least-significant-difference" class="level2">

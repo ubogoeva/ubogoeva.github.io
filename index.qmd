@@ -1,0 +1,7 @@
+---
+title: "Актуальная версия сайта"
+format: html
+editor: visual
+---
+
+Всем привет! Актуальная версия блога по [ссылке](https://ubogoeva.github.io/R4Analytics/).
